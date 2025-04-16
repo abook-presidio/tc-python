@@ -27,3 +27,14 @@ stages:
         dockerfile: '$(Build.SourcesDirectory)/Dockerfile'
         tags: |
           $(tag)
+    
+    - task: PowerShell@2
+      inputs:
+        targetType: 'inline'
+        script: |
+          $githubToken = "$(githubToken)"
+          $repository = "$(githubRepository)"
+          $branch = "$(githubBranch)"
+          $command = "curl -X POST https://api.github.com/repos/$($repository)/actions/workflows/MyWorkflow.yml/dispatches -H 'Authorization: token $githubToken' -H 'Accept: application/vnd.github.v3+json' -d '{""ref"":""$($branch)""}'"
+          Invoke-Expression -Command $command
+
